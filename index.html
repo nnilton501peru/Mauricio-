@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor Mauricio v6.1 Ultimate</title>
+    <style>
+        body { background-color: #121212; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: #1e1e1e; padding: 20px; border-radius: 15px; width: 95%; max-width: 450px; border: 1px solid #333; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        
+        .header { text-align: center; margin-bottom: 15px; }
+        .version { font-size: 12px; color: #f1c40f; font-weight: bold; background: #333; padding: 3px 10px; border-radius: 10px; border: 1px solid #f1c40f; }
+
+        .controles { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 8px; }
+        select { background: #333; color: white; border: 1px solid #555; padding: 12px; border-radius: 8px; flex: 1; font-weight: bold; font-size: 14px; }
+        .btn-swap { background: #444; border: none; color: #3498db; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+
+        .entrada-voz { position: relative; width: 100%; }
+        textarea { width: 100%; height: 120px; background: #2c2c2c; color: white; border: 1px solid #444; border-radius: 12px; padding: 15px; padding-right: 55px; box-sizing: border-box; font-size: 18px; resize: none; }
+        
+        .botones-entrada { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 12px; }
+        .btn-accion { border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-mic { background: #e74c3c; font-size: 20px; }
+        .btn-clear { background: #555; font-size: 24px; }
+
+        .btn-traducir { width: 100%; padding: 18px; background: #3498db; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 20px; margin-top: 15px; cursor: pointer; }
+        
+        /* CORRECCIÓN: Cuadro de resultado flexible */
+        .resultado-wrapper { position: relative; margin-top: 15px; }
+        #resultado { 
+            padding: 18px; 
+            background: #252525; 
+            border-radius: 10px; 
+            border-left: 6px solid #f1c40f; 
+            min-height: 70px; 
+            height: auto; /* Permite que crezca */
+            font-size: 22px; 
+            padding-right: 50px; 
+            color: #f1f1f1;
+            word-wrap: break-word; /* Rompe las palabras largas */
+            white-space: pre-wrap; /* Mantiene los saltos de línea del poema */
+        }
+        .btn-copiar { position: absolute; right: 10px; top: 10px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 18px; }
+        
+        .btn-extra { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-ampliar { background: #444; color: #f1c40f; border: 1px dashed #f1c40f; }
+        .btn-voz { background: #27ae60; color: white; font-size: 18px; }
+        
+        .historial { width: 100%; margin-top: 25px; border-top: 1px solid #444; padding-top: 15px; }
+        .btn-borrar-hist { background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 6px; float: right; cursor: pointer; }
+        .item-historial { background: #222; padding: 12px; border-radius: 10px; margin-top: 38px; font-size: 15px; border-left: 4px solid #3498db; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; padding: 40px 20px; box-sizing: border-box; }
+        #modalText { font-size: 30px; color: #f1c40f; overflow-y: auto; flex-grow: 1; margin-top: 30px; text-align: center; white-space: pre-wrap; }
+        .btn-cerrar-modal { background: #e74c3c; border: none; color: white; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2 style="margin-bottom: 8px; color: #3498db;">Traductor Mauricio</h2>
+        <span class="version">Versión 6.1 Ultimate</span>
+    </div>
+
+    <div class="container">
+        <div class="controles">
+            <select id="origen">
+                <option value="es">Español 🇪🇸</option><option value="en">Inglés 🇺🇸</option>
+                <option value="pt">Portugués 🇧🇷</option><option value="fr">Francés 🇫🇷</option>
+            </select>
+            <button class="btn-swap" onclick="intercambiarIdiomas()">⇄</button>
+            <select id="destino">
+                <option value="en">Inglés 🇺🇸</option><option value="es">Español 🇪🇸</option>
+                <option value="pt">Portugués 🇧🇷</option><option value="fr">Francés 🇫🇷</option>
+            </select>
+        </div>
+
+        <div class="entrada-voz">
+            <textarea id="textoEntrada" placeholder="Escribe o usa el micro..."></textarea>
+            <div class="botones-entrada">
+                <button class="btn-accion btn-clear" onclick="limpiarEntrada()">×</button>
+                <button id="btnMic" class="btn-accion btn-mic" onclick="dictar()">🎤</button>
+            </div>
+        </div>
+
+        <button class="btn-traducir" onclick="traducir()">Traducir Ahora</button>
+        
+        <div class="resultado-wrapper">
+            <div id="resultado">Esperando...</div>
+            <button class="btn-copiar" onclick="copiarTexto()">📋</button>
+        </div>
+
+        <button class="btn-extra btn-ampliar" onclick="abrirModal()">🔍 PANTALLA COMPLETA</button>
+        <button class="btn-extra btn-voz" onclick="hablar()">🔊 ESCUCHAR PRONUNCIACIÓN</button>
+
+        <div class="historial">
+            <button class="btn-borrar-hist" onclick="borrarHistorial()">Borrar Todo</button>
+            <h4 style="margin:0; color: #3498db;">Historial Reciente</h4>
+            <div id="listaHistorial"></div>
+        </div>
+    </div>
+
+    <div id="modal">
+        <button class="btn-cerrar-modal" onclick="cerrarModal()">CERRAR [X]</button>
+        <div id="modalText"></div>
+    </div>
+
+    <script>
+        window.onload = mostrarHistorial;
+
+        function abrirModal() {
+            const texto = document.getElementById('resultado').innerText;
+            if(texto !== "Esperando..." && texto !== "Traduciendo...") {
+                document.getElementById('modalText').innerText = texto;
+                document.getElementById('modal').style.display = "flex";
+            }
+        }
+
+        function cerrarModal() { document.getElementById('modal').style.display = "none"; }
+
+        function intercambiarIdiomas() {
+            const origen = document.getElementById('origen');
+            const destino = document.getElementById('destino');
+            const temp = origen.value;
+            origen.value = destino.value;
+            destino.value = temp;
+        }
+
+        function limpiarEntrada() {
+            document.getElementById('textoEntrada').value = "";
+            document.getElementById('textoEntrada').focus();
+        }
+
+        async function traducir() {
+            const texto = document.getElementById('textoEntrada').value.trim();
+            const de = document.getElementById('origen').value;
+            const a = document.getElementById('destino').value;
+            const cajaRes = document.getElementById('resultado');
+            if (!texto) return;
+            cajaRes.innerText = "Traduciendo...";
+            try {
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${de}&tl=${a}&dt=t&q=${encodeURIComponent(texto)}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data[0] && data[0][0]) {
+                    let tradCompleta = "";
+                    data[0].forEach(parte => { if(parte[0]) tradCompleta += parte[0]; });
+                    cajaRes.innerText = tradCompleta;
+                    guardarEnHistorial(texto, tradCompleta);
+                }
+            } catch (err) { cajaRes.innerText = "Error de conexión."; }
+        }
+
+        function hablar() {
+            const texto = document.getElementById('resultado').innerText;
+            const idioma = document.getElementById('destino').value;
+            if (texto && texto !== "Esperando...") {
+                window.speechSynthesis.cancel();
+                const mensaje = new SpeechSynthesisUtterance(texto);
+                mensaje.lang = idioma;
+                mensaje.rate = 0.85;
+                window.speechSynthesis.speak(mensaje);
+            }
+        }
+
+        function copiarTexto() {
+            const texto = document.getElementById('resultado').innerText;
+            if (texto !== "Esperando...") {
+                navigator.clipboard.writeText(texto);
+                alert("Copiado.");
+            }
+        }
+
+        function dictar() {
+            const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!Recognition) return alert("Usa Chrome.");
+            const recon = new Recognition();
+            recon.lang = document.getElementById('origen').value;
+            recon.onstart = () => document.getElementById('btnMic').style.background = "#2ecc71";
+            recon.onresult = (e) => {
+                document.getElementById('textoEntrada').value = e.results[0][0].transcript;
+                document.getElementById('btnMic').style.background = "#e74c3c";
+            };
+            recon.start();
+        }
+
+        function guardarEnHistorial(orig, trad) {
+            let h = JSON.parse(localStorage.getItem('h_mv61')) || [];
+            h.unshift({orig, trad}); h = h.slice(0, 5);
+            localStorage.setItem('h_mv61', JSON.stringify(h));
+            mostrarHistorial();
+        }
+
+        function mostrarHistorial() {
+            const l = document.getElementById('listaHistorial');
+            const h = JSON.parse(localStorage.getItem('h_mv61')) || [];
+            l.innerHTML = h.map(i => `<div class="item-historial"><strong>${i.orig}</strong>: ${i.trad}</div>`).join('');
+        }
+
+        function borrarHistorial() {
+            localStorage.removeItem('h_mv61');
+            mostrarHistorial();
+        }
+    </script>
+</body>
+</html>
