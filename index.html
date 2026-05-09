@@ -2,39 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Mauricio - Perú</title>
-    <style>
-        body { background: #121212; color: #fff; text-align: center; font-family: sans-serif; padding: 20px; }
-        h1 { color: #00ff00; }
-        select { width: 100%; padding: 15px; font-size: 18px; border-radius: 10px; background: #333; color: #fff; border: 2px solid #00ff00; margin-bottom: 20px; }
-        .boton-play { width: 100%; padding: 20px; font-size: 22px; font-weight: bold; cursor: pointer; background: #00ff00; color: #000; border: none; border-radius: 15px; box-shadow: 0 0 15px #00ff00; }
-    </style>
+    <title>Radio Mauricio Oficial</title>
 </head>
 <body>
-    <h1>📻 MULTI-RADIO MAURICIO</h1>
-    <p>Selecciona tu emisora favorita:</p>
-
-    <select id="selector">
-        <option value="https://crp-fast-3.shoutca.st/radio-moda-128-aac">Radio Moda</option>
-        <option value="https://stream.zeno.fm/46a48q8z3m0uv">Radio Líder</option>
-        <option value="https://crp-fast-3.shoutca.st/radio-la-karibena-128-aac">La Karibeña</option>
-        <option value="https://crp-fast-3.shoutca.st/radio-nueva-q-128-aac">La Nueva Q</option>
-        <option value="https://sc.hot108.com/108-128k-mp3">Hot 108 Jamz (NY)</option>
+    <h1>📻 RADIO MAURICIO</h1>
+    <p>Selecciona tu radio:</p>
+    <select id="emisora" onchange="cambiarRadio()">
+        <option value="https://radios.perustream.com/8004/stream">Radio Moda</option>
+        <option value="https://radios.perustream.com/8022/stream">La Karibeña</option>
+        <option value="https://radios.perustream.com/8002/stream">Ritmo Romantica</option>
     </select>
-
-    <br>
-    <button class="boton-play" onclick="reproducir()">▶ ESCUCHAR AHORA</button>
-
-    <audio id="player"></audio>
-
+    <br><br>
+    <audio id="player" controls autoplay style="width:100%"></audio>
     <script>
-        function reproducir() {
+        function cambiarRadio() {
             var player = document.getElementById('player');
-            var url = document.getElementById('selector').value;
-            player.src = url;
+            player.src = document.getElementById('emisora').value;
             player.play();
         }
+        window.onload = cambiarRadio;
     </script>
 </body>
 </html>
