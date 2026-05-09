@@ -2,25 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Radio Mauricio Oficial</title>
+    <title>Radio Mauricio PRO</title>
 </head>
 <body>
     <h1>📻 RADIO MAURICIO</h1>
-    <p>Selecciona tu radio:</p>
-    <select id="emisora" onchange="cambiarRadio()">
+    <select id="streamSelect">
         <option value="https://radios.perustream.com/8004/stream">Radio Moda</option>
         <option value="https://radios.perustream.com/8022/stream">La Karibeña</option>
-        <option value="https://radios.perustream.com/8002/stream">Ritmo Romantica</option>
     </select>
     <br><br>
-    <audio id="player" controls autoplay style="width:100%"></audio>
+    <button onclick="tocar()" style="padding:20px; background:#0f0; font-size:20px; font-weight:bold;">▶ INICIAR RADIO</button>
     <script>
-        function cambiarRadio() {
-            var player = document.getElementById('player');
-            player.src = document.getElementById('emisora').value;
-            player.play();
+        function tocar() {
+            var audio = new Audio(document.getElementById('streamSelect').value);
+            audio.play();
         }
-        window.onload = cambiarRadio;
     </script>
 </body>
 </html>
