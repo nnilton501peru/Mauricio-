@@ -1,22 +1,8 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Radio Mauricio PRO</title>
-</head>
+<html>
 <body>
-    <h1>📻 RADIO MAURICIO</h1>
-    <select id="streamSelect">
-        <option value="https://radios.perustream.com/8004/stream">Radio Moda</option>
-        <option value="https://radios.perustream.com/8022/stream">La Karibeña</option>
-    </select>
-    <br><br>
-    <button onclick="tocar()" style="padding:20px; background:#0f0; font-size:20px; font-weight:bold;">▶ INICIAR RADIO</button>
-    <script>
-        function tocar() {
-            var audio = new Audio(document.getElementById('streamSelect').value);
-            audio.play();
-        }
-    </script>
+    <audio id="radio" controls autoplay>
+        <source src="https://radios.perustream.com/8004/stream" type="audio/mpeg">
+    </audio>
 </body>
 </html>
