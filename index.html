@@ -1,10 +1,217 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Mauricio v6.7</title>
+    <style>
+        body { 
+            background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; padding: 15px;
+            margin: 0; min-height: 100vh;
+        }
+        #saludo { color: #00ffcc; font-size: 18px; margin-top: 25px; font-weight: 400; letter-spacing: 2px; }
+        #reloj { font-size: 55px; font-weight: 300; color: white; margin: 5px 0; letter-spacing: -1px; }
+        #fecha { color: #cccccc; margin-bottom: 30px; font-size: 15px; text-transform: uppercase; letter-spacing: 2px; font-weight: 500; }
+        
+        .contenedor { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .boton {
+            text-decoration: none; padding: 18px; border-radius: 15px; text-align: center;
+            font-size: 20px; font-weight: 800; color: #ffffff; border: 2px solid transparent;
+            background: rgba(255,255,255,0.05); display: none;
+        }
+        
+        .btn0 { border-color: #ff3131; box-shadow: 0 0 8px #ff3131; }
+        .btn1 { border-color: #00d2ff; box-shadow: 0 0 8px #00d2ff; }
+        .btn2 { border-color: #39ff14; box-shadow: 0 0 8px #39ff14; }
+        .btn3 { border-color: #fff01f; box-shadow: 0 0 8px #fff01f; }
+        .btn4 { border-color: #bc13fe; box-shadow: 0 0 8px #bc13fe; }
+        .btn5 { border-color: #ffac1c; box-shadow: 0 0 8px #ffac1c; }
+        .btn6 { border-color: #00ffff; box-shadow: 0 0 8px #00ffff; }
+        .btn7 { border-color: #ff00ff; box-shadow: 0 0 8px #ff00ff; }
+        .btn8 { border-color: #ffffff; box-shadow: 0 0 8px #ffffff; }
+        .btn9 { border-color: #4d4dff; box-shadow: 0 0 8px #4d4dff; }
+
+        .btn-luz { 
+            background: #222; margin-top: 35px; padding: 15px 30px; border-radius: 12px; 
+            color: #eeeeee; font-size: 13px; letter-spacing: 2.5px; border: 1px solid #444; 
+            cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
+        
+        #capa-luz { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 999; }
+
+        .config { background: #111; padding: 20px; border-radius: 15px; margin-top: 20px; width: 95%; border: 2px solid #333; margin-bottom: 50px; }
+        .oculto { display: none; }
+        
+        label { color: #ff9800; font-size: 16px; display: block; margin: 15px 0 8px 5px; font-weight: bold; }
+        
+        input { 
+            width: 92%; padding: 14px; background: #000; color: #ffffff; 
+            border: 1px solid #555; border-radius: 8px; margin-bottom: 8px; 
+            outline: none; font-size: 18px;
+        }
+
+        .slider { width: 100%; height: 20px; background: #333; border-radius: 5px; margin: 15px 0; }
+        .select-letra { width: 100%; padding: 12px; background: #222; color: white; border-radius: 8px; margin-top: 5px; }
+        
+        .seccion-baja { display: flex; flex-direction: column; align-items: center; margin-bottom: 45px; margin-top: 30px; }
+        .opt-btn { background: none; border: none; font-size: 11px; font-weight: 600; padding: 10px; text-transform: uppercase; cursor: pointer; }
+        .opt-conf { color: #00d2ff; }
+        .opt-ajuste { color: #ffffff; border: 1px solid #444; border-radius: 5px; padding: 6px 12px; }
+        .opt-fs { color: #ffac1c; }
+        
+        .btn-json { width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer; color: white; text-transform: uppercase; }
+        .bg-export { background: #6f42c1; }
+        .bg-import { background: #e83e8c; }
+    </style>
+</head>
 <body>
-    <h2>📻 RADIO MAURICIO</h2>
-    <audio controls autoplay name="media">
-        <source src="https://icecast.perustream.com/moda.mp3" type="audio/mpeg">
-    </audio>
+    <div id="capa-luz" onclick="this.style.display='none'"></div>
+    <div id="saludo">CARGANDO...</div>
+    <div id="reloj">00:00:00</div>
+    <div id="fecha">...</div>
+
+    <div class="contenedor">
+        <a id="l0" href="#" class="boton btn0" target="_blank"></a>
+        <a id="l1" href="#" class="boton btn1" target="_blank"></a>
+        <a id="l2" href="#" class="boton btn2" target="_blank"></a>
+        <a id="l3" href="#" class="boton btn3" target="_blank"></a>
+        <a id="l4" href="#" class="boton btn4" target="_blank"></a>
+        <a id="l5" href="#" class="boton btn5" target="_blank"></a>
+        <a id="l6" href="#" class="boton btn6" target="_blank"></a>
+        <a id="l7" href="#" class="boton btn7" target="_blank"></a>
+        <a id="l8" href="#" class="boton btn8" target="_blank"></a>
+        <a id="l9" href="#" class="boton btn9" target="_blank"></a>
+    </div>
+
+    <button class="btn-luz" onclick="document.getElementById('capa-luz').style.display='block'">MODO LUZ</button>
+    
+    <div class="seccion-baja">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <button class="opt-btn opt-conf" onclick="toggleSeccion('form')">CONFIG</button>
+            <button class="opt-btn opt-ajuste" onclick="toggleSeccion('ajustes-panel')">AJUSTES</button>
+            <button class="opt-btn opt-fs" onclick="PANTALLA_COMPLETA()">FULL</button>
+        </div>
+        <div style="color:white; margin-top:20px; font-weight:bold; letter-spacing:3px;">MAURICIO v6.7</div>
+    </div>
+
+    <div id="ajustes-panel" class="config oculto">
+        <label>BRILLO DE LETRAS</label>
+        <input type="range" min="40" max="100" value="100" class="slider" oninput="cambiarBrillo(this.value)">
+        <label>TIPO DE LETRA</label>
+        <select class="select-letra" onchange="cambiarLetra(this.value)">
+            <option value="'Segoe UI', sans-serif">Moderna</option>
+            <option value="'Courier New', monospace">Clásica</option>
+            <option value="Arial, sans-serif">Gruesa</option>
+        </select>
+        <button onclick="toggleSeccion('ajustes-panel')" class="btn-luz" style="width:100%; margin-top:20px;">CERRAR</button>
+    </div>
+
+    <div id="form" class="config oculto">
+        <div id="inputs-area"></div>
+        <button onclick="guardar()" style="width:100%; padding:18px; background:#1e7e34; color:white; border:none; border-radius:10px; font-weight:bold; font-size:16px;">GUARDAR CAMBIOS</button>
+        <button onclick="backupAutomaticoJSON()" class="btn-json bg-export">GUARDAR BACKUP JSON</button>
+        <button onclick="document.getElementById('fileInput').click()" class="btn-json bg-import">RESTAURAR BACKUP JSON</button>
+        <input type="file" id="fileInput" style="display:none" onchange="restaurarAutomaticoJSON(this)">
+    </div>
+
+    <script>
+        function toggleSeccion(id) {
+            const el = document.getElementById(id);
+            const estaOculto = el.classList.contains('oculto');
+            document.getElementById('form').classList.add('oculto');
+            document.getElementById('ajustes-panel').classList.add('oculto');
+            if(estaOculto) el.classList.remove('oculto');
+            if(id === 'form') generarInputs();
+        }
+
+        function cambiarBrillo(val) {
+            const colorVal = Math.round((255 * val) / 100);
+            const colorRgb = `rgb(${colorVal}, ${colorVal}, ${colorVal})`;
+            document.querySelectorAll('.boton').forEach(b => b.style.color = colorRgb);
+            localStorage.setItem('brilloUser', val);
+        }
+
+        function cambiarLetra(fuente) {
+            document.querySelectorAll('.boton').forEach(b => b.style.fontFamily = fuente);
+            localStorage.setItem('fuenteUser', fuente);
+        }
+
+        function actualizar() {
+            const ahora = new Date();
+            document.getElementById('reloj').innerText = ahora.toLocaleTimeString();
+            document.getElementById('fecha').innerText = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+            
+            const hora = ahora.getHours();
+            let msj = (hora >= 6 && hora < 12) ? "BUENOS DÍAS ☀️" : (hora >= 12 && hora < 19) ? "BUENAS TARDES 🌤️" : "BUENAS NOCHES 🌙";
+            document.getElementById('saludo').innerText = msj;
+
+            for(let i=0; i<10; i++) {
+                let nom = localStorage.getItem('n'+i);
+                let link = localStorage.getItem('u'+i);
+                let el = document.getElementById('l'+i);
+                if(nom && nom.trim() !== "") {
+                    el.innerText = nom;
+                    el.href = link || "#";
+                    el.style.display = "block";
+                } else { el.style.display = "none"; }
+            }
+            if(localStorage.getItem('brilloUser')) cambiarBrillo(localStorage.getItem('brilloUser'));
+            if(localStorage.getItem('fuenteUser')) cambiarLetra(localStorage.getItem('fuenteUser'));
+        }
+
+        function generarInputs() {
+            let html = '';
+            for(let i=0; i<10; i++) {
+                let n = localStorage.getItem('n'+i) || "";
+                let u = localStorage.getItem('u'+i) || "";
+                html += `<label>BOTÓN ${i+1}</label>
+                         <input id="in${i}" value="${n}" placeholder="Nombre">
+                         <input id="iu${i}" value="${u}" placeholder="URL">`;
+            }
+            document.getElementById('inputs-area').innerHTML = html;
+        }
+
+        function guardar() {
+            for(let i=0; i<10; i++) {
+                localStorage.setItem('n'+i, document.getElementById('in'+i).value);
+                localStorage.setItem('u'+i, document.getElementById('iu'+i).value);
+            }
+            actualizar();
+            toggleSeccion('form');
+        }
+
+        function PANTALLA_COMPLETA() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
+        function backupAutomaticoJSON() {
+            let datos = {};
+            for(let i=0; i<10; i++) {
+                datos['n'+i] = localStorage.getItem('n'+i) || "";
+                datos['u'+i] = localStorage.getItem('u'+i) || "";
+            }
+            const blob = new Blob([JSON.stringify(datos)], {type: 'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'panel_mauricio_backup.json';
+            a.click();
+        }
+
+        function restaurarAutomaticoJSON(input) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const data = JSON.parse(reader.result);
+                for(let k in data) { localStorage.setItem(k, data[k]); }
+                location.reload();
+            };
+            reader.readAsText(input.files[0]);
+        }
+
+        setInterval(actualizar, 1000);
+        actualizar();
+    </script>
 </body>
 </html>
